@@ -1,6 +1,8 @@
 package model;
 
 
+import model.chat.Chat;
+
 import java.util.ArrayList;
 
 public class User {
@@ -173,6 +175,18 @@ public class User {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+    private ArrayList<Chat> chats = new ArrayList<>();
+
+    public ArrayList<Chat> getChats() {
+//        if (Chat.getPulicChat() == null) {
+//            Chat.setPulicChat(new Chat());
+//        }
+//        if (!this.chats.contains(Chat.getPulicChat())) {
+//            chats.add(Chat.getPulicChat());
+//        }
+//        return chats;
+        return this.chats;
     }
 
 }

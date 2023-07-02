@@ -12,14 +12,14 @@ import java.util.ArrayList;
 public class ProfileController {
 
     private final User currentUser;
-
+    private static final int PORT = 8100;
     public ProfileController(User currentUser) {
         this.currentUser = currentUser;
     }
 
     public static void addFromFriendList(User user, User currentUser) {
         try {
-            Socket socket = new Socket("localhost",8002);
+            Socket socket = new Socket("localhost",PORT);
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] json = {"addFromFriendList",user.getUsername(),currentUser.getUsername()};
             writer.writeUTF(new Gson().toJson(json));
@@ -32,7 +32,7 @@ public class ProfileController {
     }
     public static void removeFromFriendList(User user, User currentUser) {
         try {
-            Socket socket = new Socket("localhost",8002);
+            Socket socket = new Socket("localhost",PORT);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             String[] json = {"removeFromFriendList",user.getUsername(),currentUser.getUsername()};
             dos.writeUTF(new Gson().toJson(json));
@@ -43,15 +43,22 @@ public class ProfileController {
         }
     }
 
-    public static ArrayList<User> rankPlayers() {
+    public static ArrayList rankPlayers() {
         try {
-            Socket socket = new Socket("localhost",8002);
+            Socket socket = new Socket("localhost",PORT);
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             DataInputStream reader = new DataInputStream(socket.getInputStream());
-            writer.writeUTF("rankPlayers");
+            String[] json = {"rankPlayers"};
+            writer.writeUTF(new Gson().toJson(json));
             writer.flush();
-            String string = reader.readUTF();
-            return new Gson().fromJson(string,ArrayList.class);
+            ArrayList<User> toReturn = new ArrayList<>();
+            while (true) {
+                String input = reader.readUTF();
+                if (input.equals("finished")) {
+                    return toReturn;
+                }
+                toReturn.add(new Gson().fromJson(input,User.class));
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -61,9 +68,22 @@ public class ProfileController {
 
     public static void sendFriendRequest(User user, User currentUser) {
         try {
-            Socket socket = new Socket("localhost",8002);
+            Socket socket = new Socket("localhost",PORT);
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] json = {"sendFriendRequest", user.getUsername(),currentUser.getUsername()};
+            writer.writeUTF(new Gson().toJson(json));
+            writer.flush();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setUserOnline(User currentUser) {//todo : check
+        try {
+         Socket socket = new Socket("localhost",PORT);
+            DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
+            String[] json = {"setUserOnline",currentUser.getUsername()};
             writer.writeUTF(new Gson().toJson(json));
             writer.flush();
         }

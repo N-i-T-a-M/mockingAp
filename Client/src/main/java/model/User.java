@@ -1,6 +1,7 @@
 package model;
 
 
+import model.chat.Chat;
 import view.SecurityQuestionMenu;
 
 import java.util.ArrayList;
@@ -172,5 +173,17 @@ public class User {
 
     public int getRank() {
         return this.rank;
+    }
+    private ArrayList<Chat> chats = new ArrayList<>();
+
+    public ArrayList<Chat> getChats() {
+//        if (!this.chats.contains(Chat.publicChat)) {
+//            chats.add(Chat.publicChat);
+//        }
+        return this.chats;
+    }
+
+    public void setChats(ArrayList<Chat> chats) {
+        this.chats = chats;
     }
 }

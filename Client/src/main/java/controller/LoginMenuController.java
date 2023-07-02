@@ -1,12 +1,13 @@
 package controller;
 
 import com.google.gson.Gson;
+import model.Captcha;
 import model.User;
+import view.CaptchaMenu;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 
 public class LoginMenuController {
     private static User loggingInUser;
@@ -22,7 +23,7 @@ public class LoginMenuController {
 
     public static String login(String username, String password) {
         try {
-            Socket socket = new Socket("localhost", 8001);
+            Socket socket = new Socket("localhost", 3000);
             DataInputStream reader = new DataInputStream(socket.getInputStream());
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"login", username, password};
@@ -30,12 +31,12 @@ public class LoginMenuController {
             writer.flush();
             String response = reader.readUTF();
             if (response.equals("ok")) {
-                loggingInUser = new Gson().fromJson(reader.readUTF(), User.class);
+                loggedInUser = new Gson().fromJson(reader.readUTF(), User.class);
+                CaptchaMenu.setLogginInUsername(username);
             }
             socket.close();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
@@ -48,7 +49,7 @@ public class LoginMenuController {
 //            return "The username format is incorrect.";
 //        }
 //        try {
-//         Socket socket = new Socket("localhost", 8001);
+//         Socket socket = new Socket("localhost", 3000);
 //            DataInputStream reader = new DataInputStream(socket.getInputStream());
 //            DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
 //            String[] userJson = {"checkUsername", username};
@@ -83,7 +84,7 @@ public class LoginMenuController {
             return "password and password confirm don't match.";
         }
         try {
-            Socket socket = new Socket("localhost", 8001);
+            Socket socket = new Socket("localhost", 3000);
             DataInputStream reader = new DataInputStream(socket.getInputStream());
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"setNewPassword", username, password};
@@ -92,8 +93,7 @@ public class LoginMenuController {
             loggedInUser = new Gson().fromJson(reader.readUTF(), User.class);
             socket.close();
             return "password changed successfully.";
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
@@ -101,7 +101,7 @@ public class LoginMenuController {
 
     public static boolean isUsernameUsed(String text) {
         try {
-            Socket socket = new Socket("localhost", 8001);
+            Socket socket = new Socket("localhost", 3000);
             DataInputStream reader = new DataInputStream(socket.getInputStream());
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"isUsernameUsed", text};
@@ -110,15 +110,15 @@ public class LoginMenuController {
             boolean response = reader.readBoolean();
             socket.close();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
-    public static boolean isEmailUsed (String email) {
+
+    public static boolean isEmailUsed(String email) {
         try {
-            Socket socket = new Socket("localhost", 8001);
+            Socket socket = new Socket("localhost", 3000);
             DataInputStream reader = new DataInputStream(socket.getInputStream());
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"isEmailUsed", email};
@@ -127,15 +127,15 @@ public class LoginMenuController {
             boolean response = reader.readBoolean();
             socket.close();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
+
     public static String getQuestion(String username) {
         try {
-            Socket socket = new Socket("localhost", 8001);
+            Socket socket = new Socket("localhost", 3000);
             DataInputStream reader = new DataInputStream(socket.getInputStream());
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"getQuestion", username};
@@ -144,8 +144,7 @@ public class LoginMenuController {
             String response = reader.readUTF();
             socket.close();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
@@ -153,7 +152,7 @@ public class LoginMenuController {
 
     public static boolean checkUserAnswer(String username, String answer) {
         try {
-            Socket socket = new Socket("localhost", 8001);
+            Socket socket = new Socket("localhost", 3000);
             DataInputStream reader = new DataInputStream(socket.getInputStream());
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"checkUserAnswer", username, answer};
@@ -162,8 +161,7 @@ public class LoginMenuController {
             boolean response = reader.readBoolean();
             socket.close();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -171,7 +169,7 @@ public class LoginMenuController {
 
     public static boolean checkPassword(String username, String password) {
         try {
-            Socket socket = new Socket("localhost", 8001);
+            Socket socket = new Socket("localhost", 3000);
             DataInputStream reader = new DataInputStream(socket.getInputStream());
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"checkPassword", username, password};
@@ -180,8 +178,7 @@ public class LoginMenuController {
             boolean response = reader.readBoolean();
             socket.close();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -189,7 +186,7 @@ public class LoginMenuController {
 
     public static User getUser(String loggingInUsername) {
         try {
-         Socket socket = new Socket("localhost", 8001);
+            Socket socket = new Socket("localhost", 3000);
             DataInputStream reader = new DataInputStream(socket.getInputStream());
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"getUser", loggingInUsername};
@@ -198,15 +195,15 @@ public class LoginMenuController {
             User response = new Gson().fromJson(reader.readUTF(), User.class);
             socket.close();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-    public static int playerRank (User user) {
+
+    public static int playerRank(User user) {
         try {
-         Socket socket = new Socket("localhost", 8001);
+            Socket socket = new Socket("localhost", 3000);
             DataInputStream reader = new DataInputStream(socket.getInputStream());
             DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"playerRank", user.getUsername()};
@@ -215,8 +212,7 @@ public class LoginMenuController {
             int response = reader.readInt();
             socket.close();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;

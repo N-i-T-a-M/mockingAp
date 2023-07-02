@@ -2,15 +2,18 @@ package controller;
 
 import com.google.gson.Gson;
 import model.User;
+import model.chat.Chat;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Pattern;
 
 public class RegisterMenuController {
+    private static final int PORT = 2000;
     private static User userToRegister;
 
     public static User getUserToRegister() {
@@ -21,7 +24,7 @@ public class RegisterMenuController {
         registeringUser.setAnswer(userAnswer);
         registeringUser.setQuestionNumber(userQuestionNumber);
         try {
-         Socket socket = new Socket("localhost", 8000);
+         Socket socket = new Socket("localhost", PORT);
             DataOutputStream writer = new DataOutputStream( socket.getOutputStream() ) ;
             String[] userJson = {"addUser", new Gson().toJson(registeringUser)};
             writer.writeUTF(new Gson().toJson(userJson));
@@ -48,7 +51,7 @@ public class RegisterMenuController {
             return "email format is incorrect!";
         }
         try {
-            Socket socket = new Socket("localhost", 8000);
+            Socket socket = new Socket("localhost", PORT);
             DataOutputStream writer = new DataOutputStream( socket.getOutputStream() ) ;
             DataInputStream reader = new DataInputStream( socket.getInputStream() ) ;
             String[] userJson = {"register", username, password, nickname, email, slogan};
@@ -163,4 +166,20 @@ public class RegisterMenuController {
         }
         return output;
     }
+//    public static Chat getGlobalChat() {
+//        try {
+//            Socket socket = new Socket("localhost", PORT);
+//            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+//            String [] json = {"getGlobalChat"};
+//            dataOutputStream.writeUTF(new Gson().toJson(json));
+//            dataOutputStream.flush();
+//            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+//            String globalChat = dataInputStream.readUTF();
+//            Chat chat = new Gson().fromJson(globalChat, Chat.class);
+//            return chat;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 }

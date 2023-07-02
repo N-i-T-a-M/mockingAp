@@ -11,10 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LobbyController {
+    private static final int PORT = 5000;
 
     public static GameRequest getGameRequestById(long id) {
         try {
-            Socket socket = new Socket("localhost", 8003);
+            Socket socket = new Socket("localhost", PORT);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             String[] json = {"getGameRequestById", String.valueOf(id)};
@@ -35,7 +36,7 @@ public class LobbyController {
         GameRequest gameRequest = new GameRequest(cap, currentUser);
         currentUser.setGameRequest(gameRequest);
         try {
-            Socket socket = new Socket("localhost", 8003);
+            Socket socket = new Socket("localhost", PORT);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             String[] json = {"createGameRequest", new Gson().toJson(gameRequest), new Gson().toJson(currentUser)};
             dos.writeUTF(new Gson().toJson(json));
@@ -49,7 +50,7 @@ public class LobbyController {
 
     public static ArrayList<GameRequest> getGames() {
         try {
-         Socket socket = new Socket("localhost", 8003);
+         Socket socket = new Socket("localhost", PORT);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             String[] json = {"getGames"};

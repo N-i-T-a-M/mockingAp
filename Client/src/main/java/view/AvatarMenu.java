@@ -121,7 +121,8 @@ public class AvatarMenu extends Application {//todo debug it
                 if (event1.getDragboard().hasFiles()) {
                     Image image = new Image(event1.getDragboard().getFiles().get(0).toURI().toString());
                     avatarImageView.setImage(image);
-                    currentUser.setAvatar(image.getUrl().toString());
+                    currentUser.setAvatar(image.getUrl());
+                    address = image.getUrl();
                     pane.getChildren().remove(avatar);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setContentText("Avatar changed successfully");

@@ -18,15 +18,18 @@ public class LoginController {
             for (int i = 0; i < inputSplit.length; i++) {
                 System.out.print(inputSplit[i] + " ");
             }
+            System.out.println();
             if (inputSplit[0].equals("login")) {
                 String username = inputSplit[1];
                 String password = inputSplit[2];
                 String output = login(username, password);
                 DataOutputStream dos = new DataOutputStream(client.getOutputStream());
                 dos.writeUTF(output);
+                dos.flush();
                 if (output.equals("ok")) {
-                    DataOutputStream usernameDos = new DataOutputStream(client.getOutputStream());
-                    usernameDos.writeUTF(username);
+                    DataOutputStream userDos = new DataOutputStream(client.getOutputStream());
+                    userDos.writeUTF(new Gson().toJson(UserDatabase.getUserByUsername(username)));
+                    userDos.flush();
                     UserDatabase.setAreWeLoggingIn(true);
                 }
             } else if (inputSplit[0].equals("question")) {
@@ -40,15 +43,19 @@ public class LoginController {
                 DataOutputStream dos = new DataOutputStream(client.getOutputStream());
                 User user = UserDatabase.getUserByUsername(username);
                 dos.writeUTF((new Gson()).toJson(user));
+                dos.flush();
             } else if (inputSplit[0].equals("checkUsername")) {
                 String username = inputSplit[1];
                 DataOutputStream dos = new DataOutputStream(client.getOutputStream());
                 if (UserDatabase.getUserByUsername(username) == null) {
                     dos.writeUTF("User with this username doesn't exist.");
+                    dos.flush();
                 } else {
                     dos.writeUTF("ok");
+                    dos.flush();
                     User user = UserDatabase.getUserByUsername(username);
                     dos.writeUTF((new Gson()).toJson(user));
+                    dos.flush();
                 }
             } else if (inputSplit[0].equals("isUsernameUsed")) {
                 String username = inputSplit[1];
@@ -58,10 +65,12 @@ public class LoginController {
                 } else {
                     dos.writeBoolean(true);
                 }
+                dos.flush();
             } else if (inputSplit[0].equals("getQuestion")) {
                 String username = inputSplit[1];
                 DataOutputStream dos = new DataOutputStream(client.getOutputStream());
                 dos.writeUTF(UserDatabase.getUserByUsername(username).getQuestion());
+                dos.flush();
             } else if (inputSplit[0].equals("checkUserAnswer")) {
                 String username = inputSplit[1];
                 String answer = inputSplit[2];
@@ -71,6 +80,7 @@ public class LoginController {
                 } else {
                     dos.writeBoolean(false);
                 }
+                dos.flush();
             }
             else if (inputSplit[0].equals("checkPassword")) {
                 String username = inputSplit[1];
@@ -81,11 +91,13 @@ public class LoginController {
                 } else {
                     dos.writeBoolean(false);
                 }
+                dos.flush();
             }
             else if (inputSplit[0].equals("getUser")) {
                 String username = inputSplit[1];
                 DataOutputStream dos = new DataOutputStream(client.getOutputStream());
                 dos.writeUTF((new Gson()).toJson(UserDatabase.getUserByUsername(username)));
+                dos.flush();
             }
             else if (inputSplit[0].equals("isEmailUsed")) {
                 String email = inputSplit[1];
@@ -93,15 +105,18 @@ public class LoginController {
                 for (User user:UserDatabase.getUsers()) {
                     if (user.getEmail().toUpperCase().equals(email.toUpperCase())) {
                         dos.writeBoolean(true);
+                        dos.flush();
                         return;
                     }
                 }
                 dos.writeBoolean(false);
+                dos.flush();
             }
             else if (inputSplit[0].equals("playerRank")) {
                 String username = inputSplit[1];
                 DataOutputStream dos = new DataOutputStream(client.getOutputStream());
                 dos.writeInt(UserDatabase.getUserByUsername(username).getRank());
+                dos.flush();
             }
             else {
                 System.out.println("invalid command");

@@ -7,7 +7,7 @@ public class LobbyThread extends Thread {
     @Override
     public void run() {
         try {
-            ServerSocket ss = new ServerSocket(8003);
+            ServerSocket ss = new ServerSocket(5000);
             LobbyController lobbyController = new LobbyController();
             while (true) {
                 Socket client = ss.accept();
