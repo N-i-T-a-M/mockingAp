@@ -14,5 +14,7 @@ public class Main {
         chatThread.start();
         LobbyThread lobbyThread = new LobbyThread();
         lobbyThread.start();
+        NotificationThread notificationThread = new NotificationThread();
+        notificationThread.start();
     }
 }

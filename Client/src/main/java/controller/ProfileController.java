@@ -89,6 +89,20 @@ public class ProfileController {
         }
     }
 
+    public static void logout(User currentUser) {
+        try {
+            Socket socket = new Socket("localhost",PORT);
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            String [] json = {"logout",currentUser.getUsername()};
+            String out = new Gson().toJson(json);
+            dos.writeUTF(out);
+            dos.flush();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public String changeUsername(String username) {
         if (username.isEmpty()) {
             return "Username can't be empty";

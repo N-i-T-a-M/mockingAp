@@ -42,40 +42,6 @@ public class LoginMenuController {
         return "";
     }
 
-
-//    public String checkUsername(String username) {
-//        // empty fields!
-//        if (!RegisterMenuController.isCorrectUsername(username)) {
-//            return "The username format is incorrect.";
-//        }
-//        try {
-//         Socket socket = new Socket("localhost", 3000);
-//            DataInputStream reader = new DataInputStream(socket.getInputStream());
-//            DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
-//            String[] userJson = {"checkUsername", username};
-//            writer.writeUTF((new Gson()).toJson(userJson));
-//            writer.flush();
-//            String response = reader.readUTF();
-//            if (response.equals("ok")) {
-//                loggingInUser = new Gson().fromJson(reader.readUTF(), User.class);
-//            }
-//            else {
-//                return "User with this username doesn't exist.";
-//            }
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return "Please answer your security question:\n" + user.getQuestion();
-//    }
-//
-//    public String checkAnswer(String username, String answer) {
-//        if (UserDatabase.getUserByUsername(username).getAnswer().equals(answer)) {
-//            return "Correct. Please set your new password.";
-//        }
-//        return "Incorrect answer. please try again";
-//    }
-
     public static String setNewPassword(String username, String password, String passwordRepeat) {
         if (!RegisterMenuController.isPasswordWeak(password).equals("true")) {
             return RegisterMenuController.isPasswordWeak(password);

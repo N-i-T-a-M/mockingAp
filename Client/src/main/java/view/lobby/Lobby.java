@@ -1,6 +1,7 @@
 package view.lobby;
 
 import controller.LobbyController;
+import controller.Notification;
 import controller.ProfileController;
 import javafx.application.Application;
 import javafx.scene.Cursor;
@@ -43,6 +44,7 @@ public class Lobby extends Application {
         stage.setScene(scene);
         stage.setTitle("Lobby");
         stage.show();
+        MainMenu.stopNotif(stage);
     }
 
     private HBox searchForGame(double width, double height, Stage stage) {

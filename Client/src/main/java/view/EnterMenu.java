@@ -1,6 +1,7 @@
 package view;
 
 import Enums.Images;
+import controller.Notification;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
@@ -40,19 +41,6 @@ public class EnterMenu extends Application {// todo : fix the details missing
         Button register = getRegister(width, height);
         Button login = getLogin(width, height);
         Button exit = getExit(width, height);
-        //NOT NECESSARY
-//        Button skip = new Button("skip");
-//        skip.setOnAction(actionEvent -> {
-//            try {
-//                User user = new User("admin", "admin", "admin","admin","admin");
-//                UserDatabase.setCurrentUser(user);
-//                //new MainMenu().start(stage);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
-//        pane.getChildren().add(skip);
-
         pane.getChildren().addAll(text, login, register, exit);
         Scene scene = new Scene(pane);
         stage.setScene(scene);

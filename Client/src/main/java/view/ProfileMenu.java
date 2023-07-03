@@ -1,5 +1,6 @@
 package view;
 
+import controller.Notification;
 import controller.ProfileController;
 import controller.RegisterMenuController;
 import javafx.application.Application;
@@ -59,6 +60,7 @@ public class ProfileMenu extends Application {//todo see if the users should be 
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
+        MainMenu.stopNotif(stage);
     }
 
     private VBox getWaitingList(double width, double height) {

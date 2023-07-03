@@ -1,5 +1,6 @@
 package view;
 
+import controller.Notification;
 import controller.ProfileController;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -27,9 +28,16 @@ public class MainMenu extends Application {
     public static User getCurrentUser() {
         return currentUser;
     }
+    private static Notification notification;
+
+    public static Notification getNotification() {
+        return notification;
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
+        notification = new Notification();
+        notification.start();
         currentUser.setOnline(true);
         ProfileController.setUserOnline(currentUser);
         MainMenu.stage = stage;
@@ -59,8 +67,14 @@ public class MainMenu extends Application {
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
+        stopNotif(stage);
     }
-
+    public static void stopNotif (Stage stage) {
+        stage.setOnCloseRequest(windowEvent -> {
+            Notification.setWindowClosed(true);
+            MainMenu.getNotification().stop();
+        });
+    }
     private static void getVBox(VBox vBox, Button goToProfileMenu, HBox mapMenuHBox, Button goToStartMenu, Button userLogout, Button exit, Button chat) {
         vBox.getChildren().addAll(goToStartMenu, mapMenuHBox, goToProfileMenu, chat, userLogout, exit);
         vBox.setAlignment(Pos.CENTER);
@@ -79,7 +93,7 @@ public class MainMenu extends Application {
                 } else {
                     String dimension = dimensionTextField.getText();
                     String kingdomNumber = numberOfKingdoms.getText();
-                    //(new MainMenuController()).goToMapMenu(Integer.parseInt(dimension), Integer.parseInt(kingdomNumber), stage);
+                    //todo //(new MainMenuController()).goToMapMenu(Integer.parseInt(dimension), Integer.parseInt(kingdomNumber), stage);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -110,6 +124,7 @@ public class MainMenu extends Application {
             EnterMenu enterMenu = new EnterMenu();
             try {
                 currentUser.setOnline(false);
+                ProfileController.logout(currentUser);
                 enterMenu.start(stage);
             } catch (Exception e) {
                 e.printStackTrace();

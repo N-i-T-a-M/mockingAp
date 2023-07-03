@@ -2,7 +2,6 @@ package view;
 
 import controller.ChatMenuController;
 import controller.LoginMenuController;
-import controller.RegisterMenuController;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -97,6 +96,7 @@ public class ChatMenu extends Application {
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
+        MainMenu.stopNotif(stage);
     }
 
     private TextArea type() {
@@ -431,8 +431,7 @@ public class ChatMenu extends Application {
                         }
                         chatSpaceUpdate(pane);
                         updateChatList(width, height, stage, pane, chatList);
-                    }
-                    else if (currentChat!= null && currentChat.getChatType() == ChatType.ROOM) {
+                    } else if (currentChat != null && currentChat.getChatType() == ChatType.ROOM) {
                         String answer = ChatMenuController.addUserToChat(toAdd, currentChat);
                         if (answer.equals("userAdded")) {
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);

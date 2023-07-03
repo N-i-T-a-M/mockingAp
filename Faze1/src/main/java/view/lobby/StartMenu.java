@@ -22,6 +22,7 @@ import java.awt.*;
 
 public class StartMenu extends Application {
     private static GameRequest gameRequest;
+    private static long lastEntrance;
 
     public StartMenu(GameRequest gameRequest) {
         StartMenu.gameRequest = gameRequest;
@@ -29,6 +30,7 @@ public class StartMenu extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        lastEntrance = System.currentTimeMillis();
         StartMenuController controller = new StartMenuController();
         HBox setPlayers = new HBox();
         VBox setMap = new VBox();

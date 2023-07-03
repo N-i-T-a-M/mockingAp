@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class StartMenuController {
+public class StartMenuController {//todo handle for gameRequests
     private static final int PORT = 6000;
 
     public static void removeGameRequest(GameRequest gameRequest) {
@@ -27,7 +27,7 @@ public class StartMenuController {
         }
     }
 
-    public String addPlayer(String username) {
+    public String addPlayer(String username) {//todo matin
         if (username.equals(MainMenu.getCurrentUser().getUsername())) {
             return "You are already added";
         }
@@ -50,7 +50,7 @@ public class StartMenuController {
         return "error";
     }
 
-    public String removePlayer(String username) {
+    public String removePlayer(String username) {//todo matin
         if (!LoginMenuController.isUsernameUsed(username)) {
             return "No player with this username exists";
         }
@@ -73,7 +73,7 @@ public class StartMenuController {
         return "error";
     }
 
-    public String removeAllPlayers() {
+    public String removeAllPlayers() {//todo matin
         try {
             Socket socket = new Socket("localhost", PORT);
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -93,34 +93,36 @@ public class StartMenuController {
     private boolean doesPlayerExist(String username) {
         return LoginMenuController.isUsernameUsed(username);
     }
-//
-//    public String canStartGame() {
+
+    public String canStartGame(GameRequest game) {//todo
+        try {
+            Socket socket = new Socket("localhost",PORT);
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            String[] json = {"canStartGame", new Gson().toJson(game)};
+            String output = new Gson().toJson(json);
+            dos.writeUTF(output);
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            boolean ok = dis.readBoolean();
+            if (ok) {
+
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 //        if (UserDatabase.getPlayers().size() < 2) {
 //            return "There must be at least 2 players";
 //        }
-//        // if there's no map the game can't be started
-//        return "game started successfully";
-//    }
-//
-//    public void playGame(Scanner scanner) {
-//        GameMenu menu = new GameMenu();
-//        ArrayList<Kingdom> players = new ArrayList<>();
-//        for (int i = 0; i < UserDatabase.getPlayers().size(); i++) {
-//            Kingdom kingdom = new Kingdom(UserDatabase.getPlayers().get(i), UserDatabase.getCurrentMap().getHeadSquares().get(i));
-//            players.add(kingdom);
-//            kingdom.addToStockPiles(new Storage(BuildingType.STOCKPILE, kingdom,
-//                    kingdom.getHeadSquare().getxCoordinate() - 1,
-//                    kingdom.getHeadSquare().getyCoordinate()));
-//            UserDatabase.getCurrentMap().getMap()[kingdom.getHeadSquare().getxCoordinate() - 1][kingdom.getHeadSquare().getyCoordinate()].setBuilding(kingdom.getStockPiles().get(0));
-//        }
-//        menu.run(scanner, new Game(UserDatabase.getCurrentMap(), players));
-//    }
-//
-//    public void playGame(Stage stage) throws Exception {
+        // if there's no map the game can't be started
+        return "game started successfully";
+    }
+
+//    public void playGame(Stage stage, GameRequest gameRequest) throws Exception {//todo mahdi bazi tavasot game request anjam mishe
+    //todo samte server
 //        ArrayList<Kingdom> players = new ArrayList<>();
 //        if (UserDatabase.getCurrentMap() == null)
 //            UserDatabase.setCurrentMap(new Map(30, 3));
-//        for (int i = 0; i < UserDatabase.getPlayers().size(); i++) {
+//        for (int i = 0; i < UserDatabase.getPlayers() -> gameRequest.getPlayers().size(); i++) {
 //            Kingdom kingdom = new Kingdom(UserDatabase.getPlayers().get(i), UserDatabase.getCurrentMap().getHeadSquares().get(i));
 //            players.add(kingdom);
 //            kingdom.addToStockPiles(new Storage(BuildingType.STOCKPILE, kingdom,

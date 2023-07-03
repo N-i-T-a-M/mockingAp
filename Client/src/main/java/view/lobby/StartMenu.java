@@ -1,5 +1,6 @@
 package view.lobby;
 
+import controller.Notification;
 import controller.ProfileController;
 import controller.StartMenuController;
 import javafx.application.Application;
@@ -59,6 +60,7 @@ public class StartMenu extends Application {
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
+        MainMenu.stopNotif(stage);
     }
 
     private static Text getID(Stage stage) {
@@ -75,7 +77,7 @@ public class StartMenu extends Application {
         }
     }
 
-    private static HBox privacy(Stage stage, double width, double length) {
+    private static HBox privacy(Stage stage, double width, double length) {//todo
         ToggleButton privacy = new ToggleButton("privacy");
         Text status = new Text();
         HBox holder = new HBox(privacy, status);
@@ -137,7 +139,7 @@ public class StartMenu extends Application {
         startGame.setLayoutY(5);
         startGame.setOnMouseClicked(mouseEvent -> {
             try {
-                //(new StartMenuController()).playGame(stage);
+                //(new StartMenuController()).playGame(stage,gameRequest);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

@@ -1,5 +1,6 @@
 package view;
 
+import controller.Notification;
 import controller.ProfileController;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -49,6 +50,7 @@ public class ScoreBoardMenu extends Application {
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
+        MainMenu.stopNotif(stage);
     }
 
     private VBox getvBox(double width, ArrayList<User> users, double height) {

@@ -1,6 +1,7 @@
 package view;
 
 import Enums.Avatars;
+import controller.Notification;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -50,6 +51,7 @@ public class AvatarMenu extends Application {//todo debug it
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
+        MainMenu.stopNotif(stage);
     }
 
 

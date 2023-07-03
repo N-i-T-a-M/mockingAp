@@ -57,12 +57,18 @@ public class ProfileController {
             }
             else if (inputSplit[0].equals("setUserOnline")) {//todo : check
                 String username = inputSplit[1];
+                System.out.println(username + " is online");
                 User user = UserDatabase.getUserByUsername(username);
                 assert user != null;
                 user.setOnline(true);
             }
             else if (inputSplit[0].equals("update")) {
                 UserDatabase.updateUser(new Gson().fromJson(inputSplit[1], User.class));
+            }
+            else if (inputSplit[0].equals("logout")) {
+                String username = inputSplit[1];
+                System.out.println(username +" is offline");
+                UserDatabase.getUserByUsername(username).setOnline(false);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
