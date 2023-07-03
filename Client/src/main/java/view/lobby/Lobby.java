@@ -1,6 +1,7 @@
 package view.lobby;
 
 import controller.LobbyController;
+import controller.ProfileController;
 import javafx.application.Application;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
@@ -17,7 +18,6 @@ import javafx.stage.Stage;
 import model.GameRequest;
 import model.User;
 import view.MainMenu;
-import view.lobby.StartMenu;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import java.util.Collections;
 
 public class Lobby extends Application {
     private static User currentUser;
+
     @Override
     public void start(Stage stage) throws Exception {
         currentUser = MainMenu.getCurrentUser();
@@ -37,17 +38,18 @@ public class Lobby extends Application {
         ImageView refresh = getRefresh(pane, games, width, height, stage);
         HBox createGame = getCreateGame(width, height, stage);
         HBox search = searchForGame(width, height, stage);
-        pane.getChildren().addAll(back, games, refresh, createGame,search);
+        pane.getChildren().addAll(back, games, refresh, createGame, search);
         Scene scene = new Scene(pane, width, height);
         stage.setScene(scene);
         stage.setTitle("Lobby");
         stage.show();
     }
-    private HBox searchForGame (double width, double height, Stage stage) {
+
+    private HBox searchForGame(double width, double height, Stage stage) {
         TextField field = new TextField();
         Button ok = new Button("search");
         field.setPromptText("search");
-        HBox search = new HBox(field,ok);
+        HBox search = new HBox(field, ok);
         search.setLayoutX(width / 2 - 100);
         search.setLayoutY(5);
         search.setSpacing(20);
@@ -56,38 +58,37 @@ public class Lobby extends Application {
             try {
                 id = Long.parseLong(field.getText());
                 GameRequest game;
-                if ((game = LobbyController.getGameRequestById(id))!= null) {
+                if ((game = LobbyController.getGameRequestById(id)) != null) {
                     if (currentUser.getGameRequest() == null) {
                         currentUser.setGameRequest(game);
                         game.getPlayers().add(currentUser);
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setContentText("You joined the game");
                         alert.showAndWait();
+                        ProfileController profileController = new ProfileController(currentUser);
+                        profileController.changeUsername(currentUser.getUsername());
                         new StartMenu(game).start(stage);
-                    }
-                    else {
+                    } else {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setContentText("You are already in a game");
                         alert.showAndWait();
                     }
-                }
-                else {
+                } else {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setContentText("No game with this id");
                     alert.showAndWait();
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Invalid id");
                 alert.showAndWait();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         return search;
     }
+
     private HBox getCreateGame(double width, double height, Stage stage) {
         Button createGame = new Button("Create Game");
         createGame.setStyle("-fx-background-color: #ff0000; -fx-text-fill: #ffffff; -fx-font-size: 20");
@@ -112,6 +113,8 @@ public class Lobby extends Application {
                     cap = Integer.parseInt(capacity.getText());
                     if (cap > 1 && cap < 9) {
                         GameRequest gameRequest = LobbyController.createGameRequest(cap, currentUser);
+                        ProfileController profileController = new ProfileController(currentUser);
+                        profileController.changeUsername(currentUser.getUsername());
                         new StartMenu(gameRequest).start(stage);
                     }
                 } catch (NumberFormatException e) {
@@ -186,6 +189,8 @@ public class Lobby extends Application {
                         currentUser.setGameRequest(game);
                         game.getPlayers().add(currentUser);
                         game.setTimeOfLastEntry(System.currentTimeMillis());
+                        ProfileController profileController = new ProfileController(currentUser);
+                        profileController.changeUsername(currentUser.getUsername());
                         try {
                             new StartMenu(game).start(stage);
                         } catch (Exception e) {
@@ -214,6 +219,8 @@ public class Lobby extends Application {
         button.setLayoutY(5);
         button.setOnAction(actionEvent -> {
             try {
+                ProfileController profileController = new ProfileController(currentUser);
+                profileController.changeUsername(currentUser.getUsername());
                 new MainMenu(currentUser).start(stage);
             } catch (Exception e) {
                 e.printStackTrace();

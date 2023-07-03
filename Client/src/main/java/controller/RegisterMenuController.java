@@ -24,14 +24,13 @@ public class RegisterMenuController {
         registeringUser.setAnswer(userAnswer);
         registeringUser.setQuestionNumber(userQuestionNumber);
         try {
-         Socket socket = new Socket("localhost", PORT);
-            DataOutputStream writer = new DataOutputStream( socket.getOutputStream() ) ;
+            Socket socket = new Socket("localhost", PORT);
+            DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
             String[] userJson = {"addUser", new Gson().toJson(registeringUser)};
             writer.writeUTF(new Gson().toJson(userJson));
             writer.flush();
             socket.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -52,8 +51,8 @@ public class RegisterMenuController {
         }
         try {
             Socket socket = new Socket("localhost", PORT);
-            DataOutputStream writer = new DataOutputStream( socket.getOutputStream() ) ;
-            DataInputStream reader = new DataInputStream( socket.getInputStream() ) ;
+            DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
+            DataInputStream reader = new DataInputStream(socket.getInputStream());
             String[] userJson = {"register", username, password, nickname, email, slogan};
             writer.writeUTF(new Gson().toJson(userJson));
             writer.flush();
@@ -64,12 +63,12 @@ public class RegisterMenuController {
             }
             socket.close();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e);
         }
         return "";
     }
+
     public static String isPasswordWeak(String password) {
         Pattern capitalLetterPattern = Pattern.compile("[A-Z]");
         Pattern smallLetterPattern = Pattern.compile("[a-z]");
@@ -92,15 +91,18 @@ public class RegisterMenuController {
         }
         return "true";
     }
+
     public static boolean isEmailFormatCorrect(String email) {
         email = email.toUpperCase();
         String emailValid = "^[A-Z0-9_.]+@[A-Z0-9_]+\\.[A-Z0-9_.]+$";
         return Pattern.matches(emailValid, email);
     }
+
     public static boolean isCorrectUsername(String username) {
         String usernameValid = "^[a-zA-Z0-9|_]+$";
         return Pattern.matches(usernameValid, username);
     }
+
     public static String generateRandomPassword() {
         ArrayList<Integer> list = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
@@ -132,6 +134,7 @@ public class RegisterMenuController {
         }
         return sb.toString();
     }
+
     public static String generateRandomSlogan() {
         ArrayList<String> slogans = new ArrayList<>();
         String slogan;
@@ -154,6 +157,7 @@ public class RegisterMenuController {
         int index = (int) (Math.random() * slogans.size());
         return slogans.get(index);
     }
+
     public static String getFamousSlogans() {
         ArrayList<String> slogans = new ArrayList<>();
         slogans.add("I fight till I die");
@@ -166,20 +170,4 @@ public class RegisterMenuController {
         }
         return output;
     }
-//    public static Chat getGlobalChat() {
-//        try {
-//            Socket socket = new Socket("localhost", PORT);
-//            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-//            String [] json = {"getGlobalChat"};
-//            dataOutputStream.writeUTF(new Gson().toJson(json));
-//            dataOutputStream.flush();
-//            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-//            String globalChat = dataInputStream.readUTF();
-//            Chat chat = new Gson().fromJson(globalChat, Chat.class);
-//            return chat;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 }

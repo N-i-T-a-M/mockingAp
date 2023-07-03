@@ -61,6 +61,9 @@ public class ProfileController {
                 assert user != null;
                 user.setOnline(true);
             }
+            else if (inputSplit[0].equals("update")) {
+                UserDatabase.updateUser(new Gson().fromJson(inputSplit[1], User.class));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

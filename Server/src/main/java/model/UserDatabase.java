@@ -167,13 +167,7 @@ public class UserDatabase {
     public static void updateUser (User user) {
         for (User user1:users) {
             if (user1.getUsername().equals(user.getUsername())) {
-                for (Field field: user1.getClass().getFields()) {
-                    try {
-                        field.set(user1, field.get(user));
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
+                user1 = user;
             }
         }
     }
