@@ -1,5 +1,6 @@
 package model.chat;
 
+import controller.RegisterMenuController;
 import model.User;
 
 import java.util.ArrayList;
@@ -7,10 +8,11 @@ import java.util.ArrayList;
 public class Chat {
     private ChatType chatType;
     private ArrayList<Message> messages = new ArrayList<>();
-    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<User> users;
     private User admin;
     private String name;
-    private static ArrayList<Chat>chats = new ArrayList<>();
+    private static ArrayList<Chat> chats = new ArrayList<>();
+
     public User getAdmin() {
         return admin;
     }
@@ -22,6 +24,7 @@ public class Chat {
     public Chat(User admin, User user, String name) {
         chatType = ChatType.PRIVATE;
         this.admin = admin;
+        this.users = new ArrayList<>();
         this.users.add(admin);
         this.users.add(user);
         this.name = name;
@@ -41,14 +44,21 @@ public class Chat {
         this.users = users;
         this.users.add(admin);
         this.name = name;
-        chats.add(this);
-//        this.admin.getChats().add(this);
-//        for (User user : users) {
-//            user.getChats().add(this);
-//        }
-//        UserDatabase.getRoomChats().add(this);
+        if (!chats.contains(this)) {
+            chats.add(this);
+        }
+        if (!admin.getChats().contains(this)) {
+            this.admin.getChats().add(this);
+        }
+        for (User user : users) {
+            if (!user.getChats().contains(this)) {
+                user.getChats().add(this);
+            }
+        }
+        if (!Chat.getChats().contains(this)) {
+            Chat.getChats().add(this);
+        }
     }
-
     public void setChatType(ChatType chatType) {
         this.chatType = chatType;
     }

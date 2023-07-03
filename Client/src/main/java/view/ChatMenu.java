@@ -1,5 +1,8 @@
 package view;
 
+import controller.ChatMenuController;
+import controller.LoginMenuController;
+import controller.RegisterMenuController;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -21,12 +24,16 @@ import model.chat.Chat;
 import model.chat.ChatType;
 import model.chat.Message;
 import model.chat.Pair;
+import view.lobby.StartMenu;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 public class ChatMenu extends Application {
-    //todo delete message for myself
+    public ChatMenu(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
     private TextArea textArea;
     private Button button1;
     private TextArea search = new TextArea();
@@ -46,9 +53,6 @@ public class ChatMenu extends Application {
         return currentUser;
     }
 
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
 
     public Chat getCurrentChat() {
         return currentChat;
@@ -62,9 +66,13 @@ public class ChatMenu extends Application {
         isComingFromLobby = comingFromLobby;
     }
 
+    public static User userToChatWith = null;
+    private static Button createGroup;
+    private static Button add = new Button("add");
+
     @Override
     public void start(Stage stage) throws Exception {
-        currentUser = MainMenu.getCurrentUser();
+        ChatMenuController.loadChats();
         Pane pane = new Pane();
         setBack1(pane);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -74,14 +82,18 @@ public class ChatMenu extends Application {
         VBox chatList = getChatList(width, height, stage, pane);
         chatList.setLayoutX(0);
         chatList.setLayoutY(0);
-        getSearch(pane);
+        getSearch(pane, width, height, stage, chatList);
         pane.getChildren().add(chatList);
         pane.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode() == KeyCode.R) {
-                chatSpace = getChatSpace(width, height, pane);
+                chatSpaceUpdate(pane);
                 System.out.println("refreshed");
             }
         });
+        createGroup = createNewRoom(width, height, stage, pane, chatList);
+        createGroup.setLayoutX(10);
+        createGroup.setLayoutY(height - 100);
+        pane.getChildren().add(createGroup);
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
@@ -124,6 +136,8 @@ public class ChatMenu extends Application {
     private void handleMessage(Pane pane, VBox vBox, Message message) {
         HBox hBox = new HBox();
         ImageView avatar = new ImageView(new Image(message.getSenderAvatar()));
+        avatar.setFitWidth(50);
+        avatar.setFitHeight(50);
         Text text = new Text(message.getContent());
         Text text1 = new Text(message.getSender().getUsername() + " : " + message.getSendingTime() + "✓" + message.getIsSeenChar());
         HBox hBox1 = new HBox(text1);
@@ -306,6 +320,7 @@ public class ChatMenu extends Application {
 
     private void laughReact(Message message, Pane pane, MenuItem laugh) {
         laugh.setOnAction(actionEvent -> {
+            //todo
             for (Pair pair : Pair.getPairs()) {
                 if (pair.getMessage() == message && pair.getUser() == currentUser) {
                     if (!pair.isUserReacted()) {
@@ -322,6 +337,9 @@ public class ChatMenu extends Application {
         pane.getChildren().remove(chatSpace);
         chatSpace = getChatSpace(pane.getWidth(), pane.getHeight(), pane);
         pane.getChildren().add(chatSpace);
+        if (chatSpace.getChildren().contains(add)) {
+            add.toFront();
+        }
     }
 
     private static void getSelectChat(double width, Pane chatSpace) {
@@ -346,9 +364,8 @@ public class ChatMenu extends Application {
     }
 
     private void addUser(Pane chatSpace, Pane pane) {
-        Button add = new Button("add");
-        add.setLayoutX(350);
-        add.setLayoutY(0);
+        add.setLayoutX(5);
+        add.setLayoutY(5);
         add.setPrefSize(50, 20);
         chatSpace.getChildren().add(add);
         add.setOnMouseClicked(mouseEvent -> {
@@ -358,7 +375,18 @@ public class ChatMenu extends Application {
                 }
                 button.setOnMouseClicked(mouseEvent1 -> {
                     toAdd = search.getText();
-                    //todo add
+                    String answer = ChatMenuController.addUserToChat(toAdd, currentChat);
+                    if (answer.equals("userAdded")) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setContentText(answer);
+                        alert.showAndWait();
+                        pane.getChildren().remove(button);
+                        chatSpaceUpdate(pane);
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setContentText(answer);
+                        alert.showAndWait();
+                    }
                 });
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -373,7 +401,7 @@ public class ChatMenu extends Application {
         pane.setBackground(new Background(backgroundImage1));
     }
 
-    private void getSearch(Pane pane) {
+    private void getSearch(Pane pane, double width, double height, Stage stage, VBox chatList) {
         search.setPromptText("Search");
         search.setPrefSize(150, 20);
         search.setLayoutX(200);
@@ -384,9 +412,49 @@ public class ChatMenu extends Application {
             button.setLayoutY(50);
             if (!pane.getChildren().contains(button))
                 pane.getChildren().add(button);
-            button.setOnAction(actionEvent -> {
+            button.setOnMouseClicked(actionEvent -> {
                 username = search.getText();
-                //todo search
+                if (LoginMenuController.isUsernameUsed(username)) {
+                    if (currentChat == null || currentChat.getChatType() != ChatType.ROOM) {
+                        userToChatWith = LoginMenuController.getUser(username);
+                        Chat chat1 = new Chat(currentUser, userToChatWith, "pv");
+                        ChatMenuController.saveChats();
+                        currentChat = chat1;
+                        if (!currentUser.getChats().contains(chat1)) {
+                            currentUser.getChats().add(chat1);
+                        }
+                        if (userToChatWith.getChats() == null) {
+                            userToChatWith.setChats(new ArrayList<>());
+                        }
+                        if (!userToChatWith.getChats().contains(chat1)) {
+                            userToChatWith.getChats().add(chat1);
+                        }
+                        chatSpaceUpdate(pane);
+                        updateChatList(width, height, stage, pane, chatList);
+                    }
+                    else if (currentChat!= null && currentChat.getChatType() == ChatType.ROOM) {
+                        String answer = ChatMenuController.addUserToChat(toAdd, currentChat);
+                        if (answer.equals("userAdded")) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setContentText(answer);
+                            alert.showAndWait();
+                            pane.getChildren().remove(button);
+                            chatSpaceUpdate(pane);
+                            ChatMenuController.saveChats();
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setContentText(answer);
+                            alert.showAndWait();
+                        }
+                        for (User user : currentChat.getUsers()) {
+                            System.out.println(user.getUsername());
+                        }
+                    }
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setContentText("User not found");
+                    alert.showAndWait();
+                }
             });
         });
         pane.getChildren().add(search);
@@ -401,8 +469,8 @@ public class ChatMenu extends Application {
             try {
                 if (!isComingFromLobby)
                     new MainMenu(currentUser).start(stage);
-//                else
-//                    new StartMenu(currentUser.getGameRequest()).start(stage);
+                else
+                    new StartMenu(currentUser.getGameRequest()).start(stage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -442,16 +510,49 @@ public class ChatMenu extends Application {
         ScrollPane scrollPane = new ScrollPane(vBox);
         VBox wrapper = new VBox(scrollPane);
         wrapper.setPrefSize(200, height);
+        wrapper.setOnMouseClicked(mouseEvent -> {
+            currentChat = null;
+            chatSpaceUpdate(pane);
+        });
         return wrapper;
+    }
+
+    private void updateChatList(double width, double height, Stage stage, Pane pane, VBox chatList) {
+        VBox vBox = getChatList(width, height, stage, pane);
+        pane.getChildren().remove(chatList);
+        pane.getChildren().add(vBox);
+        createGroup.toFront();
     }
 
     private ArrayList<Chat> getChats() {
         ArrayList<Chat> chats = new ArrayList<>();
-        for (Chat chat : Chat.getChats()) {
-            if (chat.getUsers().contains(currentUser)) {
+        if (currentUser.getChats() != null) {
+            for (Chat chat : currentUser.getChats()) {
                 chats.add(chat);
             }
+        } else {
+            currentUser.setChats(new ArrayList<>());
         }
         return chats;
+    }
+
+    private Button createNewRoom(double width, double height, Stage stage, Pane pane, VBox chatList) {
+        Button button = new Button("Create new room");
+        button.setOnMouseClicked(mouseEvent -> {
+            int cnt = 0;
+            for (Chat chat : currentUser.getChats()) {
+                if (chat.getChatType().equals(ChatType.ROOM)) {
+                    cnt++;
+                }
+            }
+            Chat chat = new Chat(currentUser, new ArrayList<User>(), ("room " + cnt + " by " + currentUser.getNickname()));
+            ChatMenuController.saveChats();
+            ChatMenuController.giveTheChatToUser(chat, currentUser);
+        });
+        button.setOnMouseExited(mouseEvent -> {
+
+            updateChatList(width, height, stage, pane, chatList);
+        });
+        return button;
     }
 }

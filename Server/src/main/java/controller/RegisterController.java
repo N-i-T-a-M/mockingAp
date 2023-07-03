@@ -3,6 +3,7 @@ package controller;
 import com.google.gson.Gson;
 import model.User;
 import model.UserDatabase;
+import model.chat.Chat;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -20,6 +21,7 @@ public class RegisterController {
             for (int i = 0; i < inputSplit.length; i++) {
                 System.out.print(inputSplit[i] + " ");
             }
+            System.out.println();
             if (inputSplit[0].equals("register")) {
                 String username = inputSplit[1];
                 String password = inputSplit[2];
@@ -38,7 +40,22 @@ public class RegisterController {
             else if (inputSplit[0].equals("addUser")) {
                 User user = new Gson().fromJson(inputSplit[1], User.class);
                 UserDatabase.addUser(user);
+                UserDatabase.saveUsers();
             }
+//            else if (inputSplit[0].equals("getGlobalChat")) {
+//                if (Chat.getPulicChat() == null) {
+//                    Chat chat = new Chat();
+//                    DataOutputStream dataOutputStream = new DataOutputStream(client.getOutputStream());
+//                    dataOutputStream.writeUTF(new Gson().toJson(chat));
+//                    dataOutputStream.flush();
+//                    Chat.setPulicChat(chat);
+//                }
+//                else {
+//                    DataOutputStream dataOutputStream = new DataOutputStream(client.getOutputStream());
+//                    dataOutputStream.writeUTF(new Gson().toJson(Chat.getPulicChat()));
+//                    dataOutputStream.flush();
+//                }
+//            }
             else {
                 System.out.println("invalid command");
             }

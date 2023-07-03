@@ -1,5 +1,6 @@
 package view;
 
+import controller.ProfileController;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -30,6 +31,7 @@ public class MainMenu extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         currentUser.setOnline(true);
+        ProfileController.setUserOnline(currentUser);
         MainMenu.stage = stage;
         Pane pane = new Pane();
         RegisterMenu.setBackGround(pane);
@@ -93,7 +95,6 @@ public class MainMenu extends Application {
             alert.showAndWait();
             if (alert.getResult().getText().equals("OK")) {
                 currentUser.setOnline(false);
-                currentUser = null;
                 System.exit(0);
             }
         });
@@ -109,7 +110,6 @@ public class MainMenu extends Application {
             EnterMenu enterMenu = new EnterMenu();
             try {
                 currentUser.setOnline(false);
-                currentUser = null;
                 enterMenu.start(stage);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -134,11 +134,12 @@ public class MainMenu extends Application {
         goToStartMenu.setPrefSize(200, 30);
         return goToStartMenu;
     }
-    private static Button getChat () {
+
+    private static Button getChat() {
         Button goToChat = new Button("Go to chat");
         goToChat.setOnMouseClicked(event -> {
             try {
-                new ChatMenu().start(stage);
+                new ChatMenu(currentUser).start(stage);
             } catch (Exception e) {
                 e.printStackTrace();
             }

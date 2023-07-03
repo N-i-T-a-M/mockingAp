@@ -34,11 +34,9 @@ public class ChatMenu extends Application {
     private TextArea search = new TextArea();
     private String username = "";
     private String toAdd = "";
-    private User currentUser = new User("matin", "1", "ali", "sfs", "");
-    User user = new User("ali", "1", "ali", "sfs", "");
+    private User currentUser = UserDatabase.getCurrentUser();
     private Chat currentChat = null;
     private Pane chatSpace = null;
-    Chat chat = new Chat(currentUser, user, "chat");
     private Button button = new Button("Search");
     private boolean isComingFromLobby = false;
 
@@ -79,7 +77,7 @@ public class ChatMenu extends Application {
         VBox chatList = getChatList(width, height, stage, pane);
         chatList.setLayoutX(0);
         chatList.setLayoutY(0);
-        getSearch(pane);
+        getSearch(pane,width,height,stage,chatList);
         pane.getChildren().add(chatList);
         pane.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode() == KeyCode.R) {
@@ -87,18 +85,6 @@ public class ChatMenu extends Application {
                 System.out.println("refreshed");
             }
         });
-        //
-        Button button2 = new Button();
-        button2.setPrefSize(50, 50);
-        button2.setLayoutX(0);
-        button2.setLayoutY(300);
-        button2.setOnMouseClicked(event -> {
-            User user1 = currentUser;
-            currentUser = user;
-            user = user1;
-        });
-        pane.getChildren().add(button2);
-        //
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
@@ -391,7 +377,7 @@ public class ChatMenu extends Application {
         pane.setBackground(new Background(backgroundImage1));
     }
 
-    private void getSearch(Pane pane) {
+    private void getSearch(Pane pane, double width, double height, Stage stage, VBox chatList) {
         search.setPromptText("Search");
         search.setPrefSize(150, 20);
         search.setLayoutX(200);
@@ -408,7 +394,14 @@ public class ChatMenu extends Application {
                     userToChatWith = UserDatabase.getUserByUsername(username);
                     Chat chat1 = new Chat(currentUser, userToChatWith, "pv");
                     currentChat = chat1;
+                    if (!currentUser.getChats().contains(chat1)) {
+                        currentUser.getChats().add(chat1);
+                    }
+                    if (!userToChatWith.getChats().contains(chat1)) {
+                        userToChatWith.getChats().add(chat1);
+                    }
                     chatSpaceUpdate(pane);
+                    updateChatList(width,height,stage,pane,chatList);
                 } else {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setContentText("User not found");
@@ -472,15 +465,15 @@ public class ChatMenu extends Application {
         wrapper.setPrefSize(200, height);
         return wrapper;
     }
-    private void updateChatList () {
-
+    private void updateChatList (double width, double height, Stage stage, Pane pane,VBox chatList) {
+        VBox vBox = getChatList(width, height, stage, pane);
+        pane.getChildren().remove(chatList);
+        pane.getChildren().add(vBox);
     }
     private ArrayList<Chat> getChats() {
         ArrayList<Chat> chats = new ArrayList<>();
-        for (Chat chat : Chat.getChats()) {
-            if (chat.getUsers().contains(currentUser)) {
-                chats.add(chat);
-            }
+        for (Chat chat : currentUser.getChats()) {
+            chats.add(chat);
         }
         return chats;
     }

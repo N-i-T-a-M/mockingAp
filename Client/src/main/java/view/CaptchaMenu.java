@@ -48,10 +48,10 @@ public class CaptchaMenu extends Application {
         this.userQuestionNumber = userQuestionNumber;
     }
 
-    private String logginInUsername;
+    private static String loggingInUsername;
 
-    public void setLogginInUsername(String logginInUsername) {
-        this.logginInUsername = logginInUsername;
+    public static void setLogginInUsername(String logginInUsername) {
+        loggingInUsername = logginInUsername;
     }
 
     private ImageView myCaptcha;
@@ -75,7 +75,7 @@ public class CaptchaMenu extends Application {
         newCaptcha.setOnMouseClicked(event -> {
             showNewCaptcha(submit, hBox, vBox);
         });
-        submittingAction(answerField, submit);
+        submittingAction(answerField, submit,stage);
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
@@ -90,10 +90,10 @@ public class CaptchaMenu extends Application {
         return vBox;
     }
 
-    private void submittingAction(TextField answerField, Button submit) {
+    private void submittingAction(TextField answerField, Button submit,Stage stage) {
         submit.setOnMouseClicked(event -> {
             if (areWeLoggingIn) {
-                loginCaptcha(answerField);
+                loginCaptcha(answerField,stage);
             } else {
                 registerProcess(answerField);
             }
@@ -125,7 +125,7 @@ public class CaptchaMenu extends Application {
         this.areWeLoggingIn = areWeLoggingIn;
     }
 
-    private void loginCaptcha(TextField answerField) {
+    private void loginCaptcha(TextField answerField,Stage stage) {
         try {
             int a = Integer.parseInt(answerField.getText());
             if (a == Captcha.getMyNumber()) {
@@ -133,8 +133,8 @@ public class CaptchaMenu extends Application {
                 alert.setContentText("loggedIn successfully");
                 alert.showAndWait();
                 try {
-                    User user = LoginMenuController.getUser(logginInUsername);
-                    new MainMenu(user).start(EnterMenu.getStage());
+                    User user = LoginMenuController.getUser(loggingInUsername);
+                    new MainMenu(user).start(stage);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

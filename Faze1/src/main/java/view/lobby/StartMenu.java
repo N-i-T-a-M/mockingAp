@@ -3,10 +3,10 @@ package view.lobby;
 import controller.StartMenuController;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -17,14 +17,7 @@ import model.UserDatabase;
 import view.ChatMenu;
 import view.RegisterMenu;
 
-
 import java.awt.*;
-
-
-
-
-
-
 
 
 public class StartMenu extends Application {
@@ -55,28 +48,31 @@ public class StartMenu extends Application {
         Text id = getID(stage);
 
         setPlayers.getChildren().addAll(addPlayer, addPlayerButton, removePlayer, removeAllPlayers);
-        pane.getChildren().addAll(back, setPlayers, setMap, startGame,chat,id);
-        addPrivacy(pane,stage,width,height);
+        pane.getChildren().addAll(back, setPlayers, setMap, startGame, chat, id);
+        addPrivacy(pane, stage, width, height);
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
     }
-    private static Text getID (Stage stage) {
+
+    private static Text getID(Stage stage) {
         Text id = new Text("ID: " + gameRequest.getId());
         id.setLayoutX(50);
         id.setLayoutY(25);
         return id;
     }
-    private static void addPrivacy (Pane pane,Stage stage, double width, double length) {
+
+    private static void addPrivacy(Pane pane, Stage stage, double width, double length) {
         HBox privacy = privacy(stage, width, length);
         if (gameRequest.getAdmin() == UserDatabase.getCurrentUser()) {
             pane.getChildren().add(privacy);
         }
     }
-    private static HBox privacy (Stage stage, double width, double length) {
+
+    private static HBox privacy(Stage stage, double width, double length) {
         ToggleButton privacy = new ToggleButton("privacy");
         Text status = new Text();
-        HBox holder = new HBox(privacy,status);
+        HBox holder = new HBox(privacy, status);
         privacy.setOnMouseClicked(event -> {
             if (privacy.isSelected()) {
                 status.setText("private");
@@ -91,6 +87,7 @@ public class StartMenu extends Application {
         holder.setLayoutX(5);
         return holder;
     }
+
     private static Button getRemovePlayer(StartMenuController controller, double width, TextField addPlayer) {
         Button removePlayer = new Button("removePlayer");
         removePlayer.setOnMouseClicked(event -> {
@@ -179,12 +176,10 @@ public class StartMenu extends Application {
                     if (gameRequest.getPlayers().size() == 0) {
                         UserDatabase.getGames().remove(gameRequest);
                         new Lobby().start(stage);
-                    }
-                    else {
+                    } else {
                         gameRequest.setAdmin(gameRequest.getPlayers().get(0));
                     }
-                }
-                else {
+                } else {
                     gameRequest.getPlayers().remove(UserDatabase.getCurrentUser());
                     UserDatabase.getCurrentUser().setGameRequest(null);
                 }
@@ -197,7 +192,8 @@ public class StartMenu extends Application {
         back.setLayoutY(5);
         return back;
     }
-    private static Button getChat (Stage stage) {
+
+    private static Button getChat(Stage stage) {
         Button chat = new Button("chat");
         chat.setLayoutY(50);
         chat.setLayoutX(5);

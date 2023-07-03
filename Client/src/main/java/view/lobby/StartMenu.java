@@ -1,5 +1,6 @@
 package view.lobby;
 
+import controller.ProfileController;
 import controller.StartMenuController;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -13,8 +14,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.GameRequest;
-import model.UserDatabase;
+import model.User;
 import view.ChatMenu;
+import view.MainMenu;
 import view.RegisterMenu;
 
 import java.awt.*;
@@ -22,6 +24,8 @@ import java.awt.*;
 
 public class StartMenu extends Application {
     private static GameRequest gameRequest;
+    private static User currentUser;
+    private static ProfileController profileController;
 
     public StartMenu(GameRequest gameRequest) {
         StartMenu.gameRequest = gameRequest;
@@ -30,6 +34,8 @@ public class StartMenu extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         StartMenuController controller = new StartMenuController();
+        currentUser = MainMenu.getCurrentUser();
+        profileController = new ProfileController(currentUser);
         HBox setPlayers = new HBox();
         VBox setMap = new VBox();
         Pane pane = new Pane();
@@ -48,28 +54,31 @@ public class StartMenu extends Application {
         Text id = getID(stage);
 
         setPlayers.getChildren().addAll(addPlayer, addPlayerButton, removePlayer, removeAllPlayers);
-        pane.getChildren().addAll(back, setPlayers, setMap, startGame,chat,id);
-        addPrivacy(pane,stage,width,height);
+        pane.getChildren().addAll(back, setPlayers, setMap, startGame, chat, id);
+        addPrivacy(pane, stage, width, height);
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
     }
-    private static Text getID (Stage stage) {
+
+    private static Text getID(Stage stage) {
         Text id = new Text("ID: " + gameRequest.getId());
         id.setLayoutX(50);
         id.setLayoutY(25);
         return id;
     }
-    private static void addPrivacy (Pane pane,Stage stage, double width, double length) {
+
+    private static void addPrivacy(Pane pane, Stage stage, double width, double length) {
         HBox privacy = privacy(stage, width, length);
-        if (gameRequest.getAdmin() == UserDatabase.getCurrentUser()) {
+        if (gameRequest.getAdmin() == currentUser) {
             pane.getChildren().add(privacy);
         }
     }
-    private static HBox privacy (Stage stage, double width, double length) {
+
+    private static HBox privacy(Stage stage, double width, double length) {
         ToggleButton privacy = new ToggleButton("privacy");
         Text status = new Text();
-        HBox holder = new HBox(privacy,status);
+        HBox holder = new HBox(privacy, status);
         privacy.setOnMouseClicked(event -> {
             if (privacy.isSelected()) {
                 status.setText("private");
@@ -84,6 +93,7 @@ public class StartMenu extends Application {
         holder.setLayoutX(5);
         return holder;
     }
+
     private static Button getRemovePlayer(StartMenuController controller, double width, TextField addPlayer) {
         Button removePlayer = new Button("removePlayer");
         removePlayer.setOnMouseClicked(event -> {
@@ -121,13 +131,13 @@ public class StartMenu extends Application {
         return removeAllPlayers;
     }
 
-    private static Button getStartGame(Stage stage, double width) {
+    private static Button getStartGame(Stage stage, double width) {//todo
         Button startGame = new Button("startGame");
         startGame.setLayoutX(width - 100);
         startGame.setLayoutY(5);
         startGame.setOnMouseClicked(mouseEvent -> {
             try {
-                (new StartMenuController()).playGame(stage);
+                //(new StartMenuController()).playGame(stage);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -140,7 +150,6 @@ public class StartMenu extends Application {
         addPlayer.setPromptText("Username");
         addPlayerButton.setOnMouseClicked(event -> {
             Alert alert;
-
             if (addPlayer.getText().isEmpty()) {
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Username can't be empty");
@@ -166,20 +175,18 @@ public class StartMenu extends Application {
         Button back = new Button("Back");
         back.setOnMouseClicked(event -> {
             try {
-                if (gameRequest.getAdmin() == UserDatabase.getCurrentUser()) {
-                    gameRequest.getPlayers().remove(UserDatabase.getCurrentUser());
-                    UserDatabase.getCurrentUser().setGameRequest(null);
+                if (gameRequest.getAdmin() == currentUser) {
+                    gameRequest.getPlayers().remove(currentUser);
+                    currentUser.setGameRequest(null);
                     if (gameRequest.getPlayers().size() == 0) {
-                        UserDatabase.getGames().remove(gameRequest);
+                        StartMenuController.removeGameRequest(gameRequest);
                         new Lobby().start(stage);
-                    }
-                    else {
+                    } else {
                         gameRequest.setAdmin(gameRequest.getPlayers().get(0));
                     }
-                }
-                else {
-                    gameRequest.getPlayers().remove(UserDatabase.getCurrentUser());
-                    UserDatabase.getCurrentUser().setGameRequest(null);
+                } else {
+                    gameRequest.getPlayers().remove(currentUser);
+                    currentUser.setGameRequest(null);
                 }
                 new Lobby().start(stage);
             } catch (Exception e) {
@@ -190,15 +197,15 @@ public class StartMenu extends Application {
         back.setLayoutY(5);
         return back;
     }
-    private static Button getChat (Stage stage) {
+
+    private static Button getChat(Stage stage) {
         Button chat = new Button("chat");
         chat.setLayoutY(50);
         chat.setLayoutX(5);
         chat.setOnMouseClicked(mouseEvent -> {
-            ChatMenu menu = new ChatMenu();
+            ChatMenu menu = new ChatMenu(currentUser);
             menu.setComingFromLobby(true);
             menu.setCurrentChat(gameRequest.getChat());
-            menu.setCurrentUser(UserDatabase.getCurrentUser());
             try {
                 menu.start(stage);
             } catch (Exception e) {
@@ -208,42 +215,4 @@ public class StartMenu extends Application {
         return chat;
     }
 }
-//    public void run(Scanner scanner) {
-//        System.out.println("Welcome to start menu");
-//        String input;
-//        Matcher addPlayer, removePlayer, removeAllPlayers, startGame, addRandomPlayers;
-//        StartMenuController controller = new StartMenuController();
-//        while (true) {
-//            input = scanner.nextLine();
-//            addPlayer = StartMenuCommands.getMatcher(input, StartMenuCommands.ADD_PLAYER);
-//            removePlayer = StartMenuCommands.getMatcher(input, StartMenuCommands.REMOVE_PLAYER);
-//            removeAllPlayers = StartMenuCommands.getMatcher(input, StartMenuCommands.REMOVE_ALL_PLAYERS);
-//            startGame = StartMenuCommands.getMatcher(input, StartMenuCommands.START_GAME);
-//            if (input.equalsIgnoreCase("back")) {
-//                System.out.println("Welcome to main menu");
-//                return;
-//            } else if (addPlayer.find()) {
-//                if (addPlayer.group("username").isEmpty()) {
-//                    System.out.println("Username can't be empty");
-//                    continue;
-//                }
-//                System.out.println(controller.addPlayer(addPlayer.group("username")));
-//            } else if (removePlayer.find()) {
-//                if (removePlayer.group("username").isEmpty()) {
-//                    System.out.println("Username can't be empty");
-//                    continue;
-//                }
-//                System.out.println(controller.removePlayer(removePlayer.group("username")));
-//            } else if (removeAllPlayers.find()) {
-//                System.out.println(controller.removeAllPlayers());
-//            } else if (startGame.find()) {
-//                String output = controller.canStartGame();
-//                System.out.println(output);
-//                if (output.equals("game started successfully")) {
-//                    controller.playGame(scanner);
-//                }
-//            } else {
-//                System.out.println("Invalid command!");
-//            }
-//        }
-//    }
+
