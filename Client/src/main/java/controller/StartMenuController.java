@@ -7,6 +7,7 @@ import view.MainMenu;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -117,20 +118,18 @@ public class StartMenuController {//todo handle for gameRequests
         return "game started successfully";
     }
 
-//    public void playGame(Stage stage, GameRequest gameRequest) throws Exception {//todo mahdi bazi tavasot game request anjam mishe
-    //todo samte server
-//        ArrayList<Kingdom> players = new ArrayList<>();
-//        if (UserDatabase.getCurrentMap() == null)
-//            UserDatabase.setCurrentMap(new Map(30, 3));
-//        for (int i = 0; i < UserDatabase.getPlayers() -> gameRequest.getPlayers().size(); i++) {
-//            Kingdom kingdom = new Kingdom(UserDatabase.getPlayers().get(i), UserDatabase.getCurrentMap().getHeadSquares().get(i));
-//            players.add(kingdom);
-//            kingdom.addToStockPiles(new Storage(BuildingType.STOCKPILE, kingdom,
-//                    kingdom.getHeadSquare().getxCoordinate() - 1,
-//                    kingdom.getHeadSquare().getyCoordinate()));
-//            UserDatabase.getCurrentMap().getMap()[kingdom.getHeadSquare().getxCoordinate() - 1][kingdom.getHeadSquare().getyCoordinate()].setBuilding(kingdom.getStockPiles().get(0));
-//        }
+    public void playGame(Stage stage, GameRequest gameRequest) {
+        String[] json = {"playGame"};
+        try {
+            Socket socket = new Socket("localhost", PORT);
+            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            dataOutputStream.writeUTF(new Gson().toJson(json));
+            dataOutputStream.writeUTF(gameRequest.toJson());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 //        MapView mapView = new MapView(new Game(UserDatabase.getCurrentMap(), players));
 //        mapView.start(stage);
-//    }
+    }
 }

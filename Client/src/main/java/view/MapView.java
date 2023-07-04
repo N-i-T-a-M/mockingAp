@@ -123,11 +123,11 @@ public class MapView extends Application {
         buildMenu.setMaxWidth(300);
         buildMenu.setContent(buildingSelection);
 
-        church.setFill(new ImagePattern(new Image(MapMenu.class.getResource("/images/churchSym.jpeg").toExternalForm())));
-        foodBuilding.setFill(new ImagePattern(new Image(MapMenu.class.getResource("/images/farming.png").toExternalForm())));
-        buildBuilding.setFill(new ImagePattern(new Image(MapMenu.class.getResource("/images/house.png").toExternalForm())));
-        resourceBuilding.setFill(new ImagePattern(new Image(MapMenu.class.getResource("/images/resourceSym.png").toExternalForm())));
-        militaryBuilding.setFill(new ImagePattern(new Image(MapMenu.class.getResource("/images/championcaribs.png").toExternalForm())));
+        church.setFill(new ImagePattern(new Image(EnterMenu.class.getResource("/images/churchSym.jpeg").toExternalForm())));
+        foodBuilding.setFill(new ImagePattern(new Image(EnterMenu.class.getResource("/images/farming.png").toExternalForm())));
+        buildBuilding.setFill(new ImagePattern(new Image(EnterMenu.class.getResource("/images/house.png").toExternalForm())));
+        resourceBuilding.setFill(new ImagePattern(new Image(EnterMenu.class.getResource("/images/resourceSym.png").toExternalForm())));
+        militaryBuilding.setFill(new ImagePattern(new Image(EnterMenu.class.getResource("/images/championcaribs.png").toExternalForm())));
         church.setOnMouseClicked(this::clickChurch);
         foodBuilding.setOnMouseClicked(this::clickFoodBuilding);
         buildBuilding.setOnMouseClicked(this::clickBuildBuilding);
@@ -247,7 +247,7 @@ public class MapView extends Application {
                     if (bounds.intersects(rect.getBoundsInParent())) {
                         Pane pane = (Pane) child;
                         selectedPain.add((Pane) child);
-                        viewController.getCellImageByPane(pane).setOpacity(0.5);
+//                        viewController.getCellImageByPane(pane).setOpacity(0.5);
 //                        BorderStroke borderStroke = new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2));
 //                        Rectangle clip = new Rectangle();
 //                        clip.setWidth(pane.getWidth());
@@ -268,7 +268,7 @@ public class MapView extends Application {
 
     private void resetSelected() {
         for (Pane pane1 : selectedPain) {
-            viewController.getCellImageByPane(pane1).setOpacity(1);
+//            viewController.getCellImageByPane(pane1).setOpacity(1);
         }
         selectedPain.clear();
     }

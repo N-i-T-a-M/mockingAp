@@ -50,7 +50,7 @@ public class StartMenu extends Application {
         Button addPlayerButton = getAddPlayerButton(controller, setPlayers, width, addPlayer);
         Button removePlayer = getRemovePlayer(controller, width, addPlayer);
         Button removeAllPlayers = getRemoveAllPlayers(controller);
-        Button startGame = getStartGame(stage, width);
+        Button startGame = getStartGame(controller, stage, width);
         Button chat = getChat(stage);
         Text id = getID(stage);
 
@@ -133,13 +133,13 @@ public class StartMenu extends Application {
         return removeAllPlayers;
     }
 
-    private static Button getStartGame(Stage stage, double width) {//todo
+    private static Button getStartGame(StartMenuController controller, Stage stage, double width) {//todo
         Button startGame = new Button("startGame");
         startGame.setLayoutX(width - 100);
         startGame.setLayoutY(5);
         startGame.setOnMouseClicked(mouseEvent -> {
             try {
-                //(new StartMenuController()).playGame(stage,gameRequest);
+                controller.playGame(stage, gameRequest);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

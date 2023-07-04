@@ -1,14 +1,16 @@
 package controller;
 
+import Enums.BuildingType;
 import com.google.gson.Gson;
-import model.GameRequest;
-import model.User;
-import model.UserDatabase;
+import model.*;
+import model.Building.Storage;
+import model.map.Map;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class StartController {
     public void handle(Socket client) {
@@ -62,6 +64,19 @@ public class StartController {
             } else if (inputSplit[0].equals("removeGameRequest")) {
                 GameRequest gameRequest = new Gson().fromJson(inputSplit[1], GameRequest.class);
                 UserDatabase.getGames().remove(gameRequest);
+            } else if (inputSplit[0].equals("playGame")) {
+                GameRequest gameRequest = new Gson().fromJson(dis.readUTF(), GameRequest.class);
+                ArrayList<Kingdom> players = new ArrayList<>();
+                Map currentMap = new Map(30, 3);
+                for (int i = 0; i < gameRequest.getPlayers().size(); i++) {
+                    Kingdom kingdom = new Kingdom(gameRequest.getPlayers().get(i), currentMap.getHeadSquares().get(i));
+                    players.add(kingdom);
+                    kingdom.addToStockPiles(new Storage(BuildingType.STOCKPILE, kingdom,
+                            kingdom.getHeadSquare().getxCoordinate() - 1,
+                            kingdom.getHeadSquare().getyCoordinate()));
+                    currentMap.getMap()[kingdom.getHeadSquare().getxCoordinate() - 1][kingdom.getHeadSquare().getyCoordinate()].setBuilding(kingdom.getStockPiles().get(0));
+                }
+                Game game = new Game(currentMap, players);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

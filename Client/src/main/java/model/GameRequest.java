@@ -1,10 +1,12 @@
 package model;
 
+import com.google.gson.Gson;
 import model.chat.Chat;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class GameRequest {
+public class GameRequest implements Serializable {
     private int capacity;
     private ArrayList<User> players = new ArrayList<>();
     private User admin;
@@ -58,5 +60,9 @@ public class GameRequest {
         this.Id = System.currentTimeMillis();
         this.timeOfLastEntry = System.currentTimeMillis();
         this.chat = new Chat(admin,this.players,getId().toString());
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
     }
 }
