@@ -10,9 +10,6 @@ public class Map {
 
     private final ArrayList<Cell> headSquares;
 
-    private int lastX;
-    private int lastY;
-
     public Map(int dimension, int kingdomNumber) {
         map = new Cell[dimension][dimension];
         for (int i = 0; i < dimension; i++)
@@ -58,24 +55,7 @@ public class Map {
     public int getDimension() {
         return dimension;
     }
-
-    public int getLastX() {
-        return lastX;
-    }
-
-    public void setLastX(int lastX) {
-        this.lastX = lastX;
-    }
-
-    public int getLastY() {
-        return lastY;
-    }
-
     public ArrayList<Cell> getHeadSquares() {
         return headSquares;
-    }
-
-    public void setLastY(int lastY) {
-        this.lastY = lastY;
     }
 }

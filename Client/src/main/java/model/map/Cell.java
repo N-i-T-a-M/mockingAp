@@ -2,18 +2,20 @@ package model.map;
 
 
 import Enums.BuildingImages;
+import Enums.TextureType;
+import Enums.Tree;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import model.Building.Building;
 import model.people.Unit;
-import Enums.*;
 
 import java.util.ArrayList;
 
 public class Cell {
 
     private Pane pane;
+    private ImageView imageView;
     private final int xCoordinate;
     private final int yCoordinate;
     private TextureType TextureType = Enums.TextureType.EARTH;
@@ -32,7 +34,8 @@ public class Cell {
         this.yCoordinate = yCoordinate;
         pane = new Pane();
         Image image = getTextureType().getImage();
-        pane.getChildren().add(new ImageView(image));
+        imageView = new ImageView(image);
+        pane.getChildren().add(imageView);
         isPassable = getTextureType().isPassable();
     }
 
@@ -122,7 +125,7 @@ public class Cell {
         isSick = sick;
     }
     public ImageView getImage() {
-        return new ImageView(getTextureType().getImage());
+        return imageView;
     }
 
     public Image getTheImage() {

@@ -3,7 +3,10 @@ package controller;
 import com.google.gson.Gson;
 import javafx.stage.Stage;
 import model.GameRequest;
+import model.map.Map;
 import view.MainMenu;
+import view.MapView;
+import view.MapViewController;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -125,6 +128,11 @@ public class StartMenuController {//todo handle for gameRequests
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             dataOutputStream.writeUTF(new Gson().toJson(json));
             dataOutputStream.writeUTF(gameRequest.toJson());
+            try {
+                (new MapView(MapViewController.getInstance(new Map(30, 2)))).start(stage);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

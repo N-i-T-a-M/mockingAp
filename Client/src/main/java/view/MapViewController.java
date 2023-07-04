@@ -11,25 +11,27 @@ package view;
 //import model.Kingdom;
 //import model.map.Cell;
 
+import controller.mapmenu.MapMenuController;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.map.Cell;
+import model.map.Map;
 
 import java.util.ArrayList;
 
 public class MapViewController {
     private static MapViewController controller = null;
-//    private Game game;
+    private Map currentMap;
 
     public static synchronized MapViewController getInstance(//Game game
-    ) {
-//        if (controller == null)
-//            controller = new MapViewController();
+    Map currentMap) {
+        if (controller == null)
+            controller = new MapViewController();
 //        controller.game = game;
-//        return controller;
-        return null;
+        controller.currentMap = currentMap;
+        return controller;
     }
 
     public int getCurrentKingdomFoodRate() {
@@ -49,7 +51,7 @@ public class MapViewController {
 
     public int getCurrentKingdomPopulation() {
 //        return game.getCurrentKingdom().getPopulation();
-        return 0;
+        return 15;
     }
 
     public int getCurrentKingdomFearRate() {
@@ -58,19 +60,16 @@ public class MapViewController {
     }
 
     public int getCurrentMapDimension() {
-//        return game.getCurrentMap().getDimension();
-        return 0;
+        return currentMap.getDimension();
     }
 
     public Pane getCellPane(int x, int y) {
-//        return game.getCurrentMap().getMap()[x][y].getPane();
-        return null;
+        return getCurrentMap().getMap()[x][y].getPane();
     }
 
 
     public String getCellDetail(int i, int j) {
-//        MapMenuController mapController = new MapMenuController(game.getCurrentMap());
-//        return mapController.showDetail(String.valueOf(i + 1), String.valueOf(j + 1));
+//        MapMenuController mapController = new MapMenuController(getCurrentMap());
         return null;
     }
 
@@ -85,19 +84,18 @@ public class MapViewController {
     }
 
     private Cell getCellByPane(Pane pane) {
-//        for (Cell[] cells : game.getCurrentMap().getMap()) {
-//            for (Cell cell : cells) {
-//                if (cell.getPane() == pane) {
-//                    return cell;
-//                }
-//            }
-//        }
+        for (Cell[] cells : getCurrentMap().getMap()) {
+            for (Cell cell : cells) {
+                if (cell.getPane() == pane) {
+                    return cell;
+                }
+            }
+        }
         return null;
     }
 
     public Image getCellImage(int i, int j) {
-//        return game.getCurrentMap().getMap()[i][j].getTheImage();
-        return null;
+        return getCurrentMap().getMap()[i][j].getTheImage();
     }
 
     public int getCellXCoordinateByPane(Pane pane) {
@@ -121,7 +119,7 @@ public class MapViewController {
     }
 
     public void goToPauseMenu(Stage stage) throws Exception {
-//        (new PauseMenu(game, stage)).start(stage);
+        (new PauseMenu(stage, currentMap)).start(stage);
     }
 
     public String getGameBriefing() {
@@ -135,7 +133,7 @@ public class MapViewController {
 
     public double getCurrentKingdomGold() {
 //        return game.getCurrentKingdom().getGold();
-        return 0;
+        return 500;
     }
 
     public int getNumberOfWorkers() {
@@ -145,19 +143,23 @@ public class MapViewController {
 
     public int getCurrentKingdomPopularity() {
 //        return game.getCurrentKingdom().getPopularity();
-        return 0;
+        return 100;
     }
 
     public String getDetailText(ArrayList<Pane> selectedPain) {
 //        ArrayList<Cell> cells = new ArrayList<>();
 //        for (Pane pane1 : selectedPain)
 //            cells.add(getCellByPane(pane1));
-//        return (new MapMenuController(game.getCurrentMap())).showDetails(cells, game.getCurrentKingdom());
+//        return (new MapMenuController(getCurrentMap())).showDetails(cells, getCurrentKingdom());
         return null;
     }
 
     public String getBuildingControllerRepairText() {
 //        return (new BuildingController(game)).repair();
         return null;
+    }
+
+    public Map getCurrentMap() {
+        return currentMap;
     }
 }
